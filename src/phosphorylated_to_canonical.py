@@ -21,13 +21,16 @@ PHOSPHO_ATOMS = {"P", "OP1", "OP2", "OP3", "O1P", "O2P", "O3P"}
 
 class PhosphoCleaner(Select):
     def accept_residue(self, residue):
-        resname = residue.get_resname()
         return True  # Keep all residues for now
 
     def accept_atom(self, atom):
-        # Filter out phosphate atoms from phosphorylated residues
         resname = atom.get_parent().get_resname()
-        if resname in PHOSPHO_TO_CANONICAL and atom.get_name().strip() in PHOSPHO_ATOMS:
+        atom_name = atom.get_name()
+        # Remove phosphate atoms from any residue that could have them
+        if (
+            resname in PHOSPHO_TO_CANONICAL.keys() or
+            resname in PHOSPHO_TO_CANONICAL.values()
+        ) and atom_name in PHOSPHO_ATOMS:
             return False
         return True
 
@@ -42,12 +45,22 @@ def convert_phospho_residues(structure):
                     # Change HETATM to ATOM by setting id[0] to " "
                     residue.id = (" ", residue.id[1], residue.id[2])
 
+def renumber_atoms(structure):
+    serial = 1
+    for model in structure:
+        for chain in model:
+            for residue in chain:
+                for atom in residue:
+                    atom.serial_number = serial
+                    serial += 1
+
 
 def main(input_pdb, output_pdb):
     parser = PDBParser(QUIET=True)
     structure = parser.get_structure("protein", input_pdb)
 
     convert_phospho_residues(structure)
+    renumber_atoms(structure)
 
     io = PDBIO()
     io.set_structure(structure)
