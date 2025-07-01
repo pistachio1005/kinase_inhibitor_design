@@ -8,16 +8,10 @@ ffparams = osprey.ForcefieldParams()
 templateLib = osprey.TemplateLibrary(ffparams.forcefld)
 
 # read a PDB file for molecular info
-mol = osprey.readPdb('/home/users/ys472/ying_Project/kinase_inhibitor_design/pkn2.cleaned.filtered.pdb')
+mol = osprey.readPdb('/hpc/home/etm33/kinase_inhibitor_design/structures/processed/af3complex.clean.pdb') #pkn2.cleaned.filtered.pdb')
 
 # define the protein strand-- here we want the entire protein(?)
 protein = osprey.Strand(mol, templateLib=templateLib, residues=['A1', 'A334'])
-
-#Should I keep the protein regid?
-#protein.flexibility['G649'].setLibraryRotamers(osprey.WILD_TYPE, 'TYR', 'ALA', 'VAL', 'ILE', 'LEU').addWildTypeRotamers().setContinuous()
-#protein.flexibility['G650'].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
-#protein.flexibility['G651'].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
-#protein.flexibility['G654'].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
 
 ## MFS
 # * No mutable residues on the ligand
@@ -25,41 +19,28 @@ protein = osprey.Strand(mol, templateLib=templateLib, residues=['A1', 'A334'])
 # * No translation rotation on protein
 # * We set residues on the protein flexible
 
-# 1F - 211Glu, 212Ser, 213Pro, 214Pro
-# 2P - 205Tyr, 210Gly,
-# 3L - 106Ile, 142Leu, 210Gly, 
-# 4K - 179Glu
-# 5R - 143Asp
-# 6H - 177Thr, 178Pro, 179Glu
-# 7D - 177Thr
-# 8K - 139Asp, 160Leu
-# 9V - 175Cys, 176Gly, 178Pro
-# 10D - 174Phe, 175Cys
-# 11D -  174Phe
-# 12L - 174Phe, 178Pro, 181Leu, 186Leu, 223Phe
-# 13S - 174Phe
-#14K - 174Phe
+#1F - NA
+#2P – GLY210
+#3L - NA
+#4K - NA
+#5R – ASP143
+#6H – NA
+#7D – HIS24
+#8K – PHE25
+#9V – NA
+#10D – PHE25, CYS175
+#11D – CYS175
+#12L – PHE174
+#13S – NA
+#14K – NA
 
-flex_residues = ['A211', 
-				 'A212', 
-				 'A213', 
-				 'A214', 
-				 'A205', 
-				 'A210', 
-				 'A106', 
-				 'A142', 
-				 'A179', 
+
+flex_residues = ['A210', 
 				 'A143', 
-				 'A177', 
-				 'A178', 
-				 'A139', 
-				 'A160', 
-				 'A175', 
-				 'A176', 
-				 'A174', 
-				 'A181', 
-				 'A186', 
-				 'A223']
+				 'A24', 
+    			 'A25',
+                 'A175',
+                 'A174']
 
 for res in flex_residues:
     protein.flexibility[res].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
@@ -67,25 +48,18 @@ for res in flex_residues:
 # Define the ligand strand
 ligand = osprey.Strand(mol, templateLib=templateLib, residues=['B1', 'B14'])
 
-# Add flexibility and potential mutations to key ligand residues
-#ligand.flexibility['B2'].setLibraryRotamers(osprey.WILD_TYPE, 'PHE', 'TYR').addWildTypeRotamers().setContinuous()
-#ligand.flexibility['B5'].setLibraryRotamers(osprey.WILD_TYPE, 'LEU', 'ILE', 'VAL').addWildTypeRotamers().setContinuous()
-#ligand.flexibility['B8'].setLibraryRotamers(osprey.WILD_TYPE, 'ASP', 'GLU').addWildTypeRotamers().setContinuous()
-#ligand.flexibility['B10'].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
-#ligand.flexibility['B12'].setLibraryRotamers(osprey.WILD_TYPE, 'ASN', 'GLN').addWildTypeRotamers().setContinuous()
-#ligand.flexibility['B14'].setLibraryRotamers(osprey.WILD_TYPE, 'SER', 'THR').addWildTypeRotamers().setContinuous()
+# Set translation/rotation
+trflex = osprey.c.confspace.StrandFlex.TranslateRotate(10, 2.0)
+ligandForConf = [ligand, trflex]
 
 # make the conf space for the protein
-proteinConfSpace = osprey.ConfSpace(protein)
+proteinConfSpace = osprey.ConfSpace([protein])
 
 # make the conf space for the ligand
-ligandConfSpace = osprey.ConfSpace(ligand)
+ligandConfSpace = osprey.ConfSpace([ligandForConf])
 
 # make the conf space for the protein+ligand complex
-complexConfSpace = osprey.ConfSpace([protein, ligand])
-
-# Set flexiblity for the protein and ligand strands
-trflex = osprey.c.confspace.StrandFlex.TranslateRotate(10, 2.0)
+complexConfSpace = osprey.ConfSpace([protein, ligandForConf])
 
 # how should we compute energies of molecules?
 # (give the complex conf space to the ecalc since it knows about all the templates and degrees of freedom)
