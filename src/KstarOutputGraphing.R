@@ -1,9 +1,16 @@
 ## Script for plotting KStar Results
-dat <- read.csv("~/Downloads/Post2xMFSNesikExperiments.tsv", 
+dat <- read.csv("~/Downloads/positive_control.kstar.results.tsv", 
                 header = T, stringsAsFactors = F, sep = '\t')
+
+
+
+
+
+
 
 library(ggplot2)
 library(gridExtra)
+
 
 plot_dat <- function(dat, residue, indices){
   ## Clean Names
@@ -18,6 +25,8 @@ plot_dat <- function(dat, residue, indices){
   dat$K_upper <- as.numeric(dat$K_upper)
   dat$K_lower <- ifelse(is.infinite(dat$K_lower), 0, dat$K_lower)
   dat$K_upper <- ifelse(is.infinite(dat$K_upper), 0, dat$K_upper)
+  dat$K_lower <- log10(dat$K_lower)
+  dat$K_upper <- log10(dat$K_upper)
   
   ## Clean Sequence into Distinct Columns
   split_seq <- read.table(text = gsub("=", " ", dat$Sequence),
@@ -32,9 +41,9 @@ plot_dat <- function(dat, residue, indices){
   ## All-lower == Wild type
   dat$residue_designation <- ifelse(dat[[residue]] == tolower(dat[[residue]]), 'WT', dat[[residue]])
   
-  x_max <- max(dat$K_upper)
-  
   plot_data <- dat[indices,]
+  
+  x_max <- max(dat$K_upper)
   
   p1 <- ggplot(plot_data,
          aes(y = factor(residue_designation, levels = residue_designation))) +
@@ -43,25 +52,25 @@ plot_dat <- function(dat, residue, indices){
     geom_point(aes(x = K_upper), shape = 21, size = 3) +
     scale_x_continuous(limits = c(-0.05, x_max),
                        expand = expansion(mult = c(0, .02))) +
-    labs(x = expression(KStar~score),
+    labs(x = expression(Log[10]~KStar~score),
          y = NULL,
          title = paste0("Lower vs. Upper K* Scores by Sequence\n (MKI Position: ", residue, ')', sep = '')) +
     theme(
       axis.text  = element_text(face = "bold", colour = "black"),  # tick labels
       axis.title = element_text(face = "bold", colour = "black")   # axis titles
     ) +
-    theme_classic()
+    theme_minimal()
     
   return(p1)
 }
 
-p1 <- plot_dat(dat, "B14", 1:4)
+p1 <- plot_dat(dat, "B14", 1:20)
 
-p2 <- plot_dat(dat, "B9", c(1,5:7))
+p2 <- plot_dat(dat, "B9", c(1,21:39))
 
-p3 <- plot_dat(dat, "B5", c(1,8:10))
+p3 <- plot_dat(dat, "B5", c(1,40:58))
 
-p4 <- plot_dat(dat, "B3", c(1, 11:nrow(dat)))
+p4 <- plot_dat(dat, "B3", c(1,59:nrow(dat)))
 
 par(mar = c(5, 10, 2, 1),
     font.lab  = 2,   # axis titles
