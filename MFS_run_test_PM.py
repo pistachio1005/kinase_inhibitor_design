@@ -3,7 +3,7 @@ import os
 osprey.start(heapSizeMiB=24000)
 
 # Set up output directory
-output_dir = "kstar_results/pkn2_results/"
+output_dir = "/home/users/ys472/ying_Project/kinase_inhibitor_design/kstar_results/955G_mutant_results/"
 os.makedirs(output_dir, exist_ok=True)
 
 # choose a forcefield
@@ -13,10 +13,10 @@ ffparams = osprey.ForcefieldParams()
 templateLib = osprey.TemplateLibrary(ffparams.forcefld)
 
 # read a PDB file for molecular info
-mol = osprey.readPdb('/home/users/ys472/ying_Project/kinase_inhibitor_design/structures/processed/af3complex.clean.pdb')
+mol = osprey.readPdb('/home/users/ys472/ying_Project/kinase_inhibitor_design/mark2.cleaned.filtered.pdb')
 
 # define the protein strand-- here we want the entire protein(?)
-protein = osprey.Strand(mol, templateLib=templateLib, residues=['A1', 'A341'])
+protein = osprey.Strand(mol, templateLib=templateLib, residues=['A1', 'A311'])
 
 #Should I keep the protein regid?
 #protein.flexibility['G649'].setLibraryRotamers(osprey.WILD_TYPE, 'TYR', 'ALA', 'VAL', 'ILE', 'LEU').addWildTypeRotamers().setContinuous()
@@ -55,10 +55,15 @@ ligand = osprey.Strand(mol, templateLib=templateLib, residues=['B1', 'B14'])
 
 
 #These residues, if changed, result in decreased binding capacity of MKI
-flex_residues = ['B3','B5','B9','B12']
+flex_residues = ['B8']
+all_aas = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HIS', 
+           'ILE', 'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL']
 
 for res in flex_residues:
-    ligand.flexibility[res].setLibraryRotamers(osprey.WILD_TYPE, 'GLY', 'ASN', 'ALA').addWildTypeRotamers().setContinuous()
+    ligand.flexibility[res].setLibraryRotamers(osprey.WILD_TYPE, *all_aas)\
+        .addWildTypeRotamers()\
+        .setContinuous()
+
 
 # Add flexibility and potential mutations to key ligand residues
 #ligand.flexibility['B2'].setLibraryRotamers(osprey.WILD_TYPE, 'PHE', 'TYR').addWildTypeRotamers().setContinuous()

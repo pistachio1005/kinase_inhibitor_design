@@ -1,0 +1,9 @@
+WARNING: Using incubator modules: jdk.incubator.foreign
+Traceback (most recent call last):
+  File "/home/users/ys472/ying_Project/kinase_inhibitor_design/MFS_run_test_PM.py", line 7, in <module>
+    os.makedirs(output_dir, exist_ok=True)
+  File "/home/users/ys472/miniconda3/envs/AmberTools22/lib/python3.10/os.py", line 215, in makedirs
+    makedirs(head, exist_ok=exist_ok)
+  File "/home/users/ys472/miniconda3/envs/AmberTools22/lib/python3.10/os.py", line 225, in makedirs
+    mkdir(name, mode)
+PermissionError: [Errno 13] Permission denied: '/kstar_results'
