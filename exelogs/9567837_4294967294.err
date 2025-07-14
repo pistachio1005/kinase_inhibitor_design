@@ -1,0 +1,11 @@
+WARNING: Using incubator modules: jdk.incubator.foreign
+Traceback (most recent call last):
+  File "KStar.java", line 543, in edu.duke.cs.osprey.kstar.KStar.run
+Exception: Java Exception
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/users/ys472/ying_Project/kinase_inhibitor_design/MFS_run.py", line 129, in <module>
+    scoredSequences = kstar.run(ecalc.tasks)
+java.lang.java.lang.OutOfMemoryError: java.lang.OutOfMemoryError: Java heap space
