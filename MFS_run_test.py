@@ -13,10 +13,10 @@ ffparams = osprey.ForcefieldParams()
 templateLib = osprey.TemplateLibrary(ffparams.forcefld)
 
 # read a PDB file for molecular info
-mol = osprey.readPdb('/home/users/ys472/ying_Project/kinase_inhibitor_design/pkn2.cleaned.filtered.pdb')
+mol = osprey.readPdb('/home/users/ys472/ying_Project/kinase_inhibitor_design/mark2.cleaned.filtered.pdb')
 
 # define the protein strand-- here we want the entire protein(?)
-protein = osprey.Strand(mol, templateLib=templateLib, residues=['A1', 'A334'])
+protein = osprey.Strand(mol, templateLib=templateLib, residues=['A1', 'A311'])
 
 #Should I keep the protein regid?
 #protein.flexibility['G649'].setLibraryRotamers(osprey.WILD_TYPE, 'TYR', 'ALA', 'VAL', 'ILE', 'LEU').addWildTypeRotamers().setContinuous()
@@ -55,7 +55,7 @@ ligand = osprey.Strand(mol, templateLib=templateLib, residues=['B1', 'B14'])
 
 
 #These residues, if changed, result in decreased binding capacity of MKI
-flex_residues = ['B3', 'B5', 'B9', 'B14']
+flex_residues = ['B3','B5','B9','B12']
 
 for res in flex_residues:
     ligand.flexibility[res].setLibraryRotamers(osprey.WILD_TYPE, 'GLY', 'ASN', 'ALA').addWildTypeRotamers().setContinuous()
@@ -68,19 +68,22 @@ for res in flex_residues:
 #ligand.flexibility['B12'].setLibraryRotamers(osprey.WILD_TYPE, 'ASN', 'GLN').addWildTypeRotamers().setContinuous()
 #ligand.flexibility['B14'].setLibraryRotamers(osprey.WILD_TYPE, 'SER', 'THR').addWildTypeRotamers().setContinuous()
 
-# make the conf space for the protein
-proteinConfSpace = osprey.ConfSpace(protein)
-
-# make the conf space for the ligand
-ligandConfSpace = osprey.ConfSpace(ligand)
-
-# make the conf space for the protein+ligand complex
-complexConfSpace = osprey.ConfSpace([protein, ligand])
-
-# Set flexiblity for the protein and ligand strands
+# Set translation/rotation
 trflex = osprey.c.confspace.StrandFlex.TranslateRotate(10, 2.0)
 
-# Configure energy calculation
+ligandForConf = [ligand, trflex]
+
+# make the conf space for the protein
+proteinConfSpace = osprey.ConfSpace([protein])
+
+# make the conf space for the ligand
+ligandConfSpace = osprey.ConfSpace([ligandForConf])
+
+# make the conf space for the protein+ligand complex
+complexConfSpace = osprey.ConfSpace([protein, ligandForConf])
+
+# how should we compute energies of molecules?
+# (give the complex conf space to the ecalc since it knows about all the templates and degrees of freedom)
 parallelism = osprey.Parallelism(cpuCores=4)
 ecalc = osprey.EnergyCalculator(complexConfSpace, ffparams, parallelism=parallelism)
 
