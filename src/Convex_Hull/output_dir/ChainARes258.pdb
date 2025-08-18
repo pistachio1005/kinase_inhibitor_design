@@ -1,0 +1,24 @@
+ATOM      1  N   CHU A   1       7.854  17.972   3.079
+ATOM      2  CA  CHU A   1       8.266  16.713   3.697
+ATOM      3  C   CHU A   1       9.699  16.268   3.382
+ATOM      4  HA  CHU A   1       8.589  17.024   4.796
+ATOM      5  C   CHU A   1       6.809  15.402   3.165
+ATOM      6  C   CHU A   1       5.354  13.970   1.290
+ATOM      7  C   CHU A   1       6.071  15.803   1.120
+ATOM      8  C   CHU A   1       7.438  14.569   1.474
+ATOM      9  C   CHU A   1       6.151  13.237   3.545
+ATOM     10  C   CHU A   1       8.258  13.811   3.791
+ATOM     11  C   CHU A   1       7.453  14.533   5.013
+ATOM     12  C   CHU A   1       6.267  13.141   3.343
+ATOM     13  C   CHU A   1       8.297  13.789   3.404
+ATOM     14  C   CHU A   1       7.725  14.300   4.836
+ATOM     15  C   CHU A   1       4.376  14.838   3.168
+ATOM     16  C   CHU A   1       5.779  16.044   4.658
+ATOM     17  C   CHU A   1       5.032  16.722   3.107
+ATOM     18  C   CHU A   1       4.350  14.870   3.114
+ATOM     19  C   CHU A   1       5.720  16.109   4.597
+ATOM     20  C   CHU A   1       5.029  16.737   3.014
+ATOM     21  C   CHU A   1       5.317  13.995   1.287
+ATOM     22  C   CHU A   1       6.020  15.838   1.133
+ATOM     23  C   CHU A   1       7.389  14.602   1.437
+TER
