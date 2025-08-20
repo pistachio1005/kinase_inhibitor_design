@@ -50,10 +50,9 @@ print("Completed SCOPE.")
 
 # Pull important values
 
-# Internal (ligand) clashes
+# Look for intrachain clashes
 int_clashes = [x for s in contacts if len(s) > 1 for x in s]
-
-# inter-chain clashes
+# Interchain clashes (duplicates mean that the residue will clash with 2+ residues on ligand)
 flat = [x for sub in interchain for x in sub]
 seen = set()
 duplicates = set()
@@ -63,27 +62,18 @@ for num in flat:
         duplicates.add(num)
     else:
         seen.add(num)
-        
-# Pull indices with more than average clashes
+protein_result = list(duplicates)
+
+# Ligand indices with more than average number of protein clashes
 avg_len = sum(len(sub) for sub in interchain) / len(interchain)   # average number of ints per sublist
-indices = [i for i, sub in enumerate(interchain) if len(sub) >= avg_len]
-ligand_residues = [i+1 for i in indices].append(int_clashes)
-
-# Flatten the list and remove duplicates using a set
-flat = []
-if ligand_residues:
-    for item in ligand_residues:
-        if isinstance(item, list):
-            flat.extend(item)
-        else:
-            flat.append(item)
-
-# Remove duplicates while preserving order
-ligand_result = list(dict.fromkeys(flat))
+indices = [i+1 for i, sub in enumerate(interchain) if len(sub) >= avg_len]
+for i in int_clashes:
+    indices.append(i)
+ligand_result = list(set(indices))
 
 # Protein
 print("Making the following residues on protein flexible:")
-print(duplicates)
+print(protein_result)
 print("Making the following residues on ligand flexible:")
 print(ligand_result)
 
@@ -101,7 +91,7 @@ mol = osprey.readPdb(file_name)
 # define the protein strand-- here we want the entire protein(?)
 protein = osprey.Strand(mol, templateLib=templateLib, residues = ['A1', 'A311'])
 
-flex_residues = ["A"+str(i) for i in duplicates]
+flex_residues = ["A"+str(i) for i in protein_result]
 
 for res in flex_residues:
     protein.flexibility[res].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
