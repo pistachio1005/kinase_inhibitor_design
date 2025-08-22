@@ -8,7 +8,7 @@ osprey.start()
 
 # Parse command line arguments
 if len(sys.argv) < 2:
-    print("Usage: python SCOPE_MFS.py <file_name>")
+    print("Usage: python SCOPE_Design.py <file_name>")
     sys.exit(1)
 
 file_name = sys.argv[1]
@@ -36,12 +36,12 @@ chain_b_residues = ["B"+str(i) for i in range(1,residue_count_chain_b+1)]
 
 # Parameterization
 pdb_file = file_name
-output_folder = "output_dir" # Output directory for hull PDBs
+output_folder = "output_dir"
 design_chain = "B"                    
-designable_aas = ["TRP"]    
-save_pdbs = True # Check this...
+designable_aas = ["TRP"]  
+save_pdbs = True
 chirality = "L"
-fixed_residues = [i for i in range (1, residue_count_chain_b+1)] # This lets us keep residues WT (I think)
+fixed_residues = [] # None fixed
 
 print("Beginning SCOPE.")
 
@@ -57,7 +57,6 @@ contacts, interchain = singlechain_design_info(
 )
 
 print("Completed SCOPE.")
-
 # Pull important values
 
 # Look for intrachain clashes
@@ -112,6 +111,7 @@ ligand = osprey.Strand(mol, templateLib=templateLib, residues=[chain_b_residues[
 flex_residues = ["B"+str(i) for i in ligand_result]
 
 for res in flex_residues:
+    # Drop the wild-type residue from the list we're searching over
     ligand.flexibility[res].setLibraryRotamers(osprey.WILD_TYPE).addWildTypeRotamers().setContinuous()
 
 # Set translation/rotation
@@ -139,7 +139,7 @@ kstar = osprey.KStar(
 	ligandConfSpace,
 	complexConfSpace,
 	epsilon=0.683, # you proabably want something more precise in your real designs
-	writeSequencesToFile='MFS.results22Aug25.tsv'#,
+	writeSequencesToFile='MFS.results19Aug25.tsv'#,
     #maxSimultaneousMutations=100 # Added this to see if we could get the entire molecule converted to alanine
 )
 
